@@ -51,6 +51,86 @@
       </tags>
   </entry>
   <entry>
+    <title>通过VNC为Linux扩展第二显示器</title>
+    <url>/2020/06/08/extending-desktop-over-vnc/</url>
+    <content><![CDATA[<p>这篇文章是旧博客的备份恢复，因为时间久远，其中的信息可能已经有所发展或是发生改变，仅供参考。</p>
+<p>手上有一台吃灰挺久了的安卓平板，一直没有怎么使用，更多的是用来调试 Android App 以及偶尔拿它来看看视频或者盖泡面。</p>
+<p>最近写代码越发觉得笔记本单屏很难受，查文档得在Chrome跟IDE之间来回切换。而又苦于没有钱买显示器，并且宿舍也没有这么大的地方能够同时放下笔记本跟显示器。就想着能否将这平板利用起来，用它来当电脑的扩展显示器，因为我日常使用比较多的是ArchLinux，Windows基本只用来打游戏，所以就开始研究起如何在Linux下将平板作为扩展显示器。然后真就在Arch Linux Forums上找到了一篇<a href="https://bbs.archlinux.org/viewtopic.php?id=191555" target="_blank" rel="noopener">帖子</a>描述了通过VNC为Linux扩展第二显示器的方法。不过这个方法中有些步骤在我的电脑上有点问题，需要修改一下才能正常使用。</p>
+<p>下面就记录一下如何通过VNC为Linux扩展第二显示器。</p>
+<a id="more"></a>
+
+<img src="/2020/06/08/extending-desktop-over-vnc/overview.png" class="" title="💻">
+
+<h1 id="给-Xorg-添加-VIRTUAL-显示输出设备"><a href="#给-Xorg-添加-VIRTUAL-显示输出设备" class="headerlink" title="给 Xorg 添加 VIRTUAL 显示输出设备"></a>给 Xorg 添加 VIRTUAL 显示输出设备</h1><p>打开终端，执行 <code>xrandr</code> 指令，该指令会输出当前系统所有可用的显示输出设备，以及每个显示设备可设置的显示模式，如下图是我在我电脑上执行该指令的输出结果：</p>
+<img src="/2020/06/08/extending-desktop-over-vnc/xrandr_result.png" class="" title="xrandr">
+
+<p>如果能在输出中找到以 <code>VIRTUAL</code> 开头的设备（如上图中的 VIRTUAL1 以及 VIRTUAL2），就表明当前系统中已经有 <code>VIRTUAL</code> 输出设备了，可以直接进入下一个步骤。</p>
+<p>如果没能找到 <code>VIRTUAL</code> 开头的设备的话，就需要在 <code>/usr/share/X11/xorg.conf.d/</code> 下创建一个 conf 文件，添加 <code>VIRTUAL</code> 设备。具体方法如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /usr/share/X11/xorg.conf.d/20-intel.conf</span><br></pre></td></tr></table></figure>
+
+<p>然后插入以下配置文本，并保存：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Section &quot;Device&quot;</span><br><span class="line">    Identifier &quot;intelgpu0&quot;</span><br><span class="line">    Driver &quot;intel&quot; Option</span><br><span class="line">    &quot;VirtualHeads&quot; &quot;2&quot;</span><br><span class="line">EndSection</span><br></pre></td></tr></table></figure>
+
+<p>如下图所示：</p>
+<img src="/2020/06/08/extending-desktop-over-vnc/3.png" class="" title="💻">
+
+<p>保存该文件之后需要 logout ，之后重新登录。再次执行 <code>xrandr</code> ，这时候你应该就能在 <code>xrandr</code> 的输出结果中找到 <code>VIRTUAL</code> 显示输出设备了。</p>
+<h1 id="生成显示模式"><a href="#生成显示模式" class="headerlink" title="生成显示模式"></a>生成显示模式</h1><p>之后需要为你的平板或者其他作为 Linux 第二显示器设备生成一个显示模式。</p>
+<p>例如我手上的这台平板的分辨率是 2048 * 1536，我就需要为它生成一个 2048 * 1536 的显示模式。</p>
+<p>如果你手上的设备的分辨率对应的显示模式在之前 <code>xrandr</code> 的输出结果中已经存在的话，则可以跳过这一步，直接进入下一个步骤，不过你需要记住 <code>xrandr</code> 输出的显示模式列表中的第一例就是显示模式的名称。例如你的平板的分辨率为 1920 * 1080，而在 <code>xrandr</code> 的输出结果中发现了名为 <code>1920x1080</code> 的显示模式，那就可以直接进入下一个步骤了，不用再为它手动生成一个显示模式。</p>
+<p>下面我就以我平板的分辨率 2048 * 1536 说明如何生成一个显示模式。</p>
+<p>首先，我们需要为显示模式生成一个 <code>Modeline</code>，执行以下指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gtf 2048 1536 60</span><br></pre></td></tr></table></figure>
+
+<p>命令中的 2048 跟 1536 这两个参数用于指定分辨率，而末尾的 60 则用于指定刷新率，因为我们这里并不是连接一个实际的显示器，所以刷新率这个参数可以任意给，这里习惯上给了个 60 作为刷新率。</p>
+<p>执行完这条指令之后会得到这样的输出：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 2048x1536 @ 60.00 Hz (GTF) hsync: 95.34 kHz; pclk: 266.95 MHz</span><br><span class="line">  Modeline &quot;2048x1536_60.00&quot; 266.95 2048 2200 2424 2800 1536 1537 1540 1589 -HSync +Vsync</span><br></pre></td></tr></table></figure>
+<p>我们这里需要记录下 <code>Modeline</code> 之后的那部分字符串，即：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;2048x1536_60.00&quot; 266.95 2048 2200 2424 2800 1536 1537 1540 1589 -HSync +Vsync</span><br></pre></td></tr></table></figure>
+<p>有了这串字符串之后，我们就可以添加一个新的显示模式了，执行 <code>xrandr --newmode 前面记录下的字符串</code>，就能创建一个新的显示模式了，如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xrandr --newmode <span class="string">"2048x1536_60.00"</span> 266.95 2048 2200 2424 2800 1536 1537 1540 1589 -HSync +Vsync</span><br></pre></td></tr></table></figure>
+<p>其中 <code>--newmode</code> 这个参数的值就是我们前面记录下来的那一长串。</p>
+<p>而 <code>2048x1536_60.00</code> 就是我们添加的显示模式的名称。</p>
+<h1 id="为-VIRTUAL-显示输出设备添加显示模式"><a href="#为-VIRTUAL-显示输出设备添加显示模式" class="headerlink" title="为 VIRTUAL 显示输出设备添加显示模式"></a>为 VIRTUAL 显示输出设备添加显示模式</h1><p>有了 VIRTUAL 显示设备，也有了我们所需的显示模式之后，我们就需要将其两者结合起来，将显示模式添加给显示设备，让 VIRTUAL 显示设备支持我们所需的显示模式。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xrandr --addmode VIRTUAL1 2048x1536_60.00</span><br><span class="line"><span class="comment">#                    ⬆          ⬆</span></span><br><span class="line"><span class="comment">#                 显示设备    显示模式</span></span><br></pre></td></tr></table></figure>
+
+<p>该指令的 <code>--addmode</code> 参数需要传入两个值，其中第一个为显示设备名称，这里指定为 <code>VIRTUAL1</code>，第二个为显示模式，这里就指定为前面生成的显示模式 <code>2048x1536_60.00</code>。</p>
+<p>这时候再执行 <code>xrandr</code> 指令，你就能在 VIRTUAL1 这个显示输出设备底下看到我们刚刚创建的显示模式了：</p>
+<img src="/2020/06/08/extending-desktop-over-vnc/4.png" class="" title="💻">
+
+<h1 id="开启-VIRTUAL-显示输出设备"><a href="#开启-VIRTUAL-显示输出设备" class="headerlink" title="开启 VIRTUAL 显示输出设备"></a>开启 VIRTUAL 显示输出设备</h1><p>这时候 VIRTUAL 显示输出设备的状态还是 disconnect，我们接下来就需要开启它，之后就能通过 VNC 将 VIRTUAL 显示输出设备的画面给转发出去了。</p>
+<p>这一个步骤也很简单，只需要执行这么一句指令就行了：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xrandr --output VIRTUAL1 --mode 2048x1536_60.00 --right-of eDP1</span><br><span class="line"><span class="comment">#                  ⬆                  ⬆                      ⬆</span></span><br><span class="line"><span class="comment">#                显示设备            显示模式            你当前的显示设备</span></span><br></pre></td></tr></table></figure>
+<p>解释一下这条指令中的参数：</p>
+<ul>
+<li><code>--output</code>：这个参数指定的就是显示设备了，也就是 VIRTUAL1 显示输出设备。</li>
+<li><code>--mode</code>：这个参数用于指定显示模式，这里就指定为我们前面所生成的显示模式 2048x1536_60.00。</li>
+<li><code>--right-of</code>：这个参数用于指定要开启的显示设备拼接到某个设备的右边。例如我这里指定了 VIRTUAL1 拼接到我笔记本屏幕 eDP1 的右边。这个参数其实是可选的，你也可以选择 <code>--left-of</code> 等等。</li>
+</ul>
+<h1 id="通过-VNC-转发-VIRTUAL-显示输出设备的画面"><a href="#通过-VNC-转发-VIRTUAL-显示输出设备的画面" class="headerlink" title="通过 VNC 转发 VIRTUAL 显示输出设备的画面"></a>通过 VNC 转发 VIRTUAL 显示输出设备的画面</h1><p>这时候 VIRTUAL 显示设备其实已经启用了，你可以注意到，你的鼠标已经可以移动到你电脑显示器的范围之外了，接下来只需要通过 VNC 将 VIRTUAL 显示输出设备的画面转发出去就行了。<br>首先，执行 <code>xrandr</code> 指令，得到以下输出结果：</p>
+<img src="/2020/06/08/extending-desktop-over-vnc/5.png" class="" title="💻">
+
+<p>这里需要记住 VIRTUAL1 设备之后所显示的一串表达式（即上图中选中的部分）：<code>2048x1536+1920+0</code></p>
+<p>之后执行以下指令即可通过 VNC 将 VIRTUAL 显示输出设备的画面转发出去：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">x11vnc -clip 2048x1536+1920+0 -forever</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>-clip</code> 参数的值就是前面使用 <code>xrandr</code> 指令所查看到的 VIRTUAL1 设备之后的那一串表达式。 <code>-forever</code> 参数则是告诉 x11vnc 不要在设备断开连接之后就关闭 VNC。<br>默认的端口号是 <code>5900</code>。</p>
+<h1 id="如何关闭"><a href="#如何关闭" class="headerlink" title="如何关闭"></a>如何关闭</h1><ul>
+<li>首先通过 Ctrl + C 停止 <code>x11vnc</code></li>
+<li>然后关闭 VIRTUAL1 显示设备的输出：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xrandr --output VIRTUAL1 --off</span><br></pre></td></tr></table></figure></li>
+<li>（可选）从 VIRTUAL1 显示设备中删除前面添加的显示模式：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xrandr --delmode VIRTUAL1 2048x1536_60.00</span><br><span class="line"><span class="comment">#                    ⬆           ⬆</span></span><br><span class="line"><span class="comment">#                  显示设备    显示模式</span></span><br></pre></td></tr></table></figure></li>
+<li>（可选）删除前面生成的显示模式：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xrandr --rmmode 2048x1536_60.00</span><br><span class="line"><span class="comment">#                     ⬆</span></span><br><span class="line"><span class="comment">#                  显示模式</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>折腾</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2020/04/05/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
@@ -67,5 +147,29 @@
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>为什么中国亲戚总是喜欢给建议？</title>
+    <url>/2020/06/08/why-chinese-relatives-always-like-to-give-fking-advice/</url>
+    <content><![CDATA[<p>为什么中国亲戚总是喜欢给建议？</p>
+<a id="more"></a>
+
+<p>这是我从小到大就一直很想搞清楚的问题，可是我长这么大了却从没想明白这个问题的答案到底是什么。也许中国的亲戚们与生俱来就是喜欢打听别人的家底，总是喜欢给出各种看似很完美的建议来凸显自己才智过人，自己是多么成功。可是…他们真的成功吗？他们有给建议的资格吗？他们家的孩子就真的有按照他的这些建议一步步成长吗？</p>
+<p>每次亲戚聚会我都是最害怕的，经常是自己一个人躲在角落里，不出声，也不想起来走动，低着头玩着自己的手机，生怕亲戚的余光往我这边飘。</p>
+<p>我在家族里边是年龄最小的，其他兄弟姐妹都已经工作了，只有我还在上学，所以每次家庭聚会亲戚们都不可避免会把话题扯到我身上，问我学习情况、问我是否准备考研、问我是否准备考公务员、问我找女朋友了没有，只要是他们能想到的我还没经历过的事情统统都会问我一遍，然后再针对每个问题给出他们的建议：“还是考个研究生吧，文凭高一点未来也好就业”、“你头发太长了，赶紧去剪短一点”、“都大学毕业了，可以赶紧去找个女朋友了”。每次跟亲戚吃饭也是，经常是明明已经吃得很饱并且再三强调不想吃了，亲戚们还硬是疯狂往我碗里夹菜，看似热情好客，却从不考虑他人的感受。</p>
+<p>以上这些可能随便应付一下就过去了，我也不会太把这些问题当回事。但是今天，一个亲戚突然发消息给我，让我去考个公务员试试…我是真的没想懂这个亲戚为什么会这么对我说，我都听从父母以及亲戚的各种教唆，已经研究生预录取马上就要去读研了，然后现在叫我去考公务员？</p>
+<p>说真的，我是完全不知道如何去面对亲戚提出的问题和建议，我也不知道我为什么要一直顺从亲戚们给的各种建议生活，可能自己天生就没有主见也不够强势吧。</p>
+<p>我害怕家庭聚会，害怕遇到亲戚，害怕亲戚的头像出现在微信的消息通知里，害怕微信家族群出现关于我的任何讨论。甚至梦里有时候都会被亲戚的各种噩梦给吓醒。</p>
+<p>希望自己未来不要成为这样的亲戚，扼杀孩子的梦想是最残酷也是最恶毒的行为，永远不要用自己的思维定势去禁锢孩子的想法。</p>
+<p>如果未来我能有孩子，我希望Ta能够自由去探索自己感兴趣的事物，自由选择自己以后的工作，而不需要无力顺从各种建议，这样只会毁了孩子的好奇心。</p>
+<p>当然，我现在连结婚都觉得恐惧，未来还真不一定会有孩子，一个人活着真的蛮好的。</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>日常</tag>
+        <tag>自闭</tag>
+      </tags>
   </entry>
 </search>
