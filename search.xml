@@ -149,6 +149,131 @@
 ]]></content>
   </entry>
   <entry>
+    <title>联想R7000开箱上手以及ArchLinux安装</title>
+    <url>/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/</url>
+    <content><![CDATA[<p>今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。</p>
+<p>先说说我这台联想R7000的具体配置吧：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CPU: AMD Ryzen 7 4800H with Radeon Graphics (16) @ 2.900GHz</span><br><span class="line">Memory: 2 * 8G DDR4 3200MHz</span><br><span class="line">GPU: NVIDIA GeForce GTX 1650</span><br><span class="line">SSD: Samsung PM981a 512G</span><br><span class="line">SSD: Intel 760P 512G</span><br><span class="line">Wireless LAN Card: Intel Wi-Fi 6 AX200</span><br></pre></td></tr></table></figure>
+
+<p>其中512G的Intel 760P是我自己加上的，机子原厂只自带了512G的Samsung PM981a。</p>
+<p>这里简单放上一张<code>neofetch</code>截图：</p>
+<img src="/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/neofetch.png" class="" title="neofetch">
+
+<a id="more"></a>
+
+<p>这款电脑我是以首发价格5599在京东入手的，算上一些优惠折扣，最终到手价是5529。要问这个价格买这个配置的电脑值不值，从我自己的使用体验来说是相当值的，这个预算如果去买Intel平台的笔电肯定买不到性能比这个强的。</p>
+<p>一个月使用下来对这台电脑各方面都十分满意，不过还是鄙视一下联想R7000屏幕/内存/SSD抽奖。我买到的这一台是龙腾的屏幕，听说京东方的屏幕会比龙腾的屏幕好点，不过我也没见过京东方屏幕的R7000到底是怎么样的，简单测试了一下屏幕没有坏点也就懒得换货了，毕竟换回来的说不定还是龙腾的屏幕，最起码现在这个屏幕比我之前那个暗影精灵2看着舒服，就凑活着用吧（又不是不能用）。</p>
+<p>既然聊到了前一台电脑，那就说说吧，四年前高考结束那会儿买的惠普暗(gǔ)影(bāo)精灵2花了4999，除了电池鼓包这个通病之外（也正是因为这个原因，以后再也不会考虑惠普的任何产品），整体用下来还是挺满意的，大学四年用下来没遇到过什么大毛病，后面我将内存升级到16G之后，日常使用更是没什么问题。唯一让我忍受不了想换电脑的就是CPU性能了，i5-6300hq的性能日常开个IDE写代码、编译程序的时候多多少少会有一点拖泥带水的感觉，CPU的占用总会上升到100%，随之而来就是各种操作都变得十分卡顿。</p>
+<p>而R7000用下来，不管是写Java、Golang还是前端，编译速度都相当快，Jetbrains家的IDE索引速度也快了不少，写代码再也不会因为编译速度慢而浪费时间了。写Android后台开个虚拟机也十分流畅。</p>
+<p>AMD 4800H这颗8C16T的CPU日常使用完全遇不到占用达到100%的情况，基本都在50%以下，CPU日常懒得动。</p>
+<p>至于游戏方面的体验，因为我最近没怎么玩游戏，再加上买这台电脑并不是为了玩游戏的，所以还没有详细测试，只简单试了试CSGO全低特效能有200+fps左右，我已经很满足了。</p>
+<p>其实从配置上来看，这是一台高U低显的电脑，至于为什么会选择这样配置的电脑，是我不想玩游戏了吗？那肯定不是，对于游戏我依旧是充满着热爱的，虽然现在玩游戏的时间变得越来越少了。选择这个配置的主要原因是，笔记本的CPU和显卡大多数是无法更换的，唯一能升级的也就内存跟SSD，用几年过后，CPU和显卡逐渐就跟不上主流了，这时候如果想升级配置就只能选择一整台换掉，我觉得这样太亏，所以笔记本电脑并不想选择配置太高的，在预算尽量少的情况下最大限度满足自己的需求就行，以后不再需要便携性的时候整个台式机比笔记本香多了，还能享受到DIY的乐趣呢。</p>
+<p>联想的R7000要让我挑缺点的话，除了抽奖问题之外，我认为还有以下两个缺点：</p>
+<ul>
+<li>这台机子有两个M.2接口，但是其中一个M.2插槽跟SATA硬盘位是互斥的，没法同时安装SATA硬盘跟SSD</li>
+<li>机子的16G内存是由两条8G内存组成的双通道，并且机器也只有两个内存插槽，后期如果要升级内存，就得买8G以上的内存条来换掉才行</li>
+</ul>
+<p>说了这么多，总结起来还是那六个字母、两个符号：<strong>AMD, YES!</strong></p>
+<p>PS：Linux之父Linus Torvalds也<a href="http://lkml.iu.edu/hypermail/linux/kernel/2005.3/00406.html" target="_blank" rel="noopener">换到了AMD平台</a>，相信未来Linux内核对AMD平台的支持情况会越来越好。</p>
+<h1 id="ArchLinux安装"><a href="#ArchLinux安装" class="headerlink" title="ArchLinux安装"></a>ArchLinux安装</h1><p>新机器到手，除了赶紧把自带的预装了联想全家桶的Windows 10家庭中文版换成专业版之外，最重要的就是装上ArchLinux了！平时写代码啥的还是ArchLinux用起来舒服，不仅仅是字体渲染看着比Windows清晰舒服，更重要的是很多事情都可以命令行一把梭，还不容易有各种各样奇奇怪怪的毛病（例如在开始菜单加入广告推荐Edge浏览器）。</p>
+<p>ArchLinux的安装只需要按照官方Archwiki上的<a href="https://wiki.archlinux.org/index.php/Installation_guide" target="_blank" rel="noopener">Installation guide</a>一步步操作就行了，不过安装过程中如果是选择通过WiFi来接入互联网那马上就会遇到第一个问题：通过<code>wifi-menu</code>或者其他相关命令无法正常连接WiFi。</p>
+<h2 id="WiFi连接"><a href="#WiFi连接" class="headerlink" title="WiFi连接"></a>WiFi连接</h2><p>第一次启动ArchLinux的安装镜像，习惯性使用<code>wifi-menu</code>连接WiFi，直接就报错了。难道是AX200这张无线网卡太新了，安装镜像还不支持？检查了一下驱动发现是没问题的。</p>
+<p>翻了翻Google才发现，原来是机子所有的无线电接口都被bloacked了，解决方法也很简单，通过rfkill命令就能直接把所有的无线电接口都unblock：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rfkill unblock all</span><br></pre></td></tr></table></figure>
+
+<p>执行完这条命令之后再执行<code>rfkill list</code>应该就能看到如下结果，所有的无线电接口的blocked状态都是no。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">➜  ~ rfkill list</span><br><span class="line">0: ideapad_wlan: Wireless LAN</span><br><span class="line">        Soft blocked: no</span><br><span class="line">        Hard blocked: no</span><br><span class="line">1: ideapad_bluetooth: Bluetooth</span><br><span class="line">        Soft blocked: no</span><br><span class="line">        Hard blocked: no</span><br><span class="line">2: phy0: Wireless LAN</span><br><span class="line">        Soft blocked: no</span><br><span class="line">        Hard blocked: no</span><br><span class="line">3: hci0: Bluetooth</span><br><span class="line">        Soft blocked: no</span><br><span class="line">        Hard blocked: no</span><br></pre></td></tr></table></figure>
+
+<p>这时候就能正常使用<code>wifi-menu</code>或其他相关的命令行连接WiFi，继续进行后续的安装操作了。</p>
+<h2 id="屏蔽nouveau"><a href="#屏蔽nouveau" class="headerlink" title="屏蔽nouveau"></a>屏蔽nouveau</h2><p>不知道是不是因为GTX 1650这张显卡比较新，nouveau用起来总是会有一些奇奇怪怪的问题，偶尔还会导致系统关机的时候卡住，内核日志里也总会有很多关于nouveau的报错。</p>
+<p>因为打算装NVIDIA的闭源驱动，所以我直接屏蔽了nouveau，省得再出现一些奇奇怪怪的问题，具体的屏蔽方法就是在<code>/etc/modprobe.d</code>目录下新建一个<code>disable-nouveau.conf</code>文件并写入以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">blacklist nouveau</span><br></pre></td></tr></table></figure>
+
+<p>这样下次开机进系统就不会加载nouveau驱动了，内核日志中也不会再出现一大堆关于nouveau的报错。</p>
+<h2 id="屏幕亮度调节"><a href="#屏幕亮度调节" class="headerlink" title="屏幕亮度调节"></a>屏幕亮度调节</h2><p>这是我刚装上ArchLinux时遇到的第一个问题，屏幕亮度无法调节，开机直接就是最高亮度。</p>
+<p>当时翻遍了ArchWiki和Google，尝试了很多解决方法，包括在Kernel启动参数后加上各种奇奇怪怪的启动参数（<code>acpi_osi=! acpi_osi=&quot;Windows 2009&quot;</code>、<code>acpi_backlight=vendor</code>等），直接向<code>/sys/class/backlight/amdgpu_bl0/brightness</code>中写入亮度数值都不行，然后就彻底放弃了，最高亮度凑活着用吧。</p>
+<p>后来有一次从Windows重启到Linux的时候意外发现：先启动到Windows，然后在Windows上面选择重启，之后再进Linux就能正常调节亮度了。当时没有其他解决方法，所以只能每次用Linux都先启动到Windows，然后再重启进ArchLinux。</p>
+<p>后面滚到5.7.6内核之后就能正常调节屏幕亮度了，但是随之而来又带来了新的问题，系统在播放音频或者是视频的时候，有一定的概率会卡死，就跟这个帖子描述的类似：<a href="https://bbs.archlinux.org/viewtopic.php?id=256929" target="_blank" rel="noopener">https://bbs.archlinux.org/viewtopic.php?id=256929</a>，kernel的日志也是一样的，初步怀疑是kernel某个patch有问题，又懒得自己编译内核，所以就先滚回5.7.5内核，最高亮度先用着，坐等内核更新。</p>
+<p>终于，昨天更新了5.7.7内核之后，亮度调节正常，播放音/视频也不会再导致系统卡死了。R7000装Linux遇到屏幕亮度无法调节的可以将内核升级到5.7.7试试，应该就能调节了。</p>
+<h2 id="AMD-NVIDIA双显卡切换"><a href="#AMD-NVIDIA双显卡切换" class="headerlink" title="AMD/NVIDIA双显卡切换"></a>AMD/NVIDIA双显卡切换</h2><p>R7000是支持在BIOS中设置成独显直连的，但是我并不想让Linux直接在独显上跑，不仅费电，还容易发热，日常写代码感觉也不需要用上独显，所以我还是更喜欢双显卡切换，毕竟集成显卡也是花了钱买的嘛，怎么能就这么放着不用呢。</p>
+<p>之前暗影精灵2上面是使用bumblebee的方案来管理双显卡的，但是bumblebee似乎只支持Intel+NVIDIA双显卡，不支持AMD+NVIDIA双显卡。那就只能寻找新的解决方案了。</p>
+<p>所以就去爬了爬ArchWiki上的<a href="https://wiki.archlinux.org/index.php/NVIDIA_Optimus" target="_blank" rel="noopener">NVIDIA Optimus</a>，最终决定采用<a href="https://github.com/Askannz/optimus-manager/" target="_blank" rel="noopener">optimus-manager</a>来管理双显卡。</p>
+<h3 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h3><p>AMD集成显卡的驱动使用<code>xf86-video-amdgpu</code>，NVIDIA独立显卡的驱动使用NVIDIA闭源驱动：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo pacman -S xf86-video-amdgpu</span><br><span class="line">sudo pacman -S nvidia nvidia-settings nvidia-utils lib32-nvidia-utils</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装Optimus-Manager"><a href="#安装Optimus-Manager" class="headerlink" title="安装Optimus Manager"></a>安装Optimus Manager</h3><p>首先需要安装optimus-manager， 因为是AMD平台，所以不能直接安装原版的optimus-manager，必须安装AMD分支版本<a href="https://aur.archlinux.org/packages/optimus-manager-amd-git/" target="_blank" rel="noopener">optimus-manager-amd-git</a><sup>AUR</sup>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yay -S optimus-manager-amd-git</span><br></pre></td></tr></table></figure>
+
+<p>同时bbswitch也得替换成<a href="https://aur.archlinux.org/packages/bbswitch-ati-git/" target="_blank" rel="noopener">bbswitch-ati-git</a><sup>AUR</sup>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yay -S bbswitch-ati-git</span><br></pre></td></tr></table></figure>
+
+<p>都安装好了之后开启服务：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">enable</span> optimus-manager.service</span><br></pre></td></tr></table></figure>
+
+<p>同时需要确保<code>/etc/X11/xorg.conf</code> 和 <code>/etc/X11/xorg.conf.d</code> 下面没有显示相关的配置文件</p>
+<h3 id="配置Optimus-Manager"><a href="#配置Optimus-Manager" class="headerlink" title="配置Optimus Manager"></a>配置Optimus Manager</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p /etc/optimus-manager</span><br><span class="line">sudo cp /usr/share/optimus-manager.conf /etc/optimus-manager/optimus-manager.conf</span><br></pre></td></tr></table></figure>
+
+<p>然后编辑<code>/etc/optimus-manager/optimus-manager.conf</code>文件，根据文件内的注释说明进行optimus-manager的配置。</p>
+<p>这里贴一下我自己用的配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[optimus]</span><br><span class="line"></span><br><span class="line"># This parameter defines the method used to power switch the Nvidia card. See the documentation</span><br><span class="line"># for a complete description of what each value does. Possible values :</span><br><span class="line">#</span><br><span class="line"># - nouveau : load the nouveau module on the Nvidia card.</span><br><span class="line"># - bbswitch : power off the card using the bbswitch module (requires the bbswitch dependency).</span><br><span class="line"># - acpi_call : try various ACPI method calls to power the card on and off (requires the acpi_call dependency)</span><br><span class="line"># - none : do not use an external module for power management. For some laptop models it&#39;s preferable to</span><br><span class="line">#           use this option in combination with pci_power_control (see below).</span><br><span class="line">#           With that option set, you can also use the scripts nvidia-enable.sh and nvidia-disable.sh to</span><br><span class="line">#           execute custom commands for power management.</span><br><span class="line">switching&#x3D;none</span><br><span class="line"></span><br><span class="line"># Enable PCI power management in Intel mode.</span><br><span class="line"># This option is incompatible with acpi_call and bbswitch, so it will be ignored in those cases.</span><br><span class="line">pci_power_control&#x3D;yes</span><br><span class="line"></span><br><span class="line"># Remove the Nvidia card from the PCI bus.</span><br><span class="line"># May prevent crashes caused by power switching.</span><br><span class="line"># Ignored if switching&#x3D;nouveau or switching&#x3D;bbswitch.</span><br><span class="line">pci_remove&#x3D;no</span><br><span class="line"></span><br><span class="line"># Reset the Nvidia card at the PCI level before reloading the nvidia module.</span><br><span class="line"># Ensures the card is in a fresh state before reloading the nvidia module.</span><br><span class="line"># May fix some switching issues. Possible values :</span><br><span class="line">#</span><br><span class="line"># - no : does not perform any reset</span><br><span class="line"># - function_level : perform a light &quot;function-level&quot; reset</span><br><span class="line"># - hot_reset : perform a &quot;hot reset&quot; of the PCI bridge. ATTENTION : this method messes with the hardware</span><br><span class="line">#         directly, please read the online documentation of optimus-manager before using it.</span><br><span class="line">#         Also, it will perform a PCI remove even if pci_remove&#x3D;no.</span><br><span class="line">#</span><br><span class="line">pci_reset&#x3D;no</span><br><span class="line"></span><br><span class="line"># Automatically log out the current desktop session when switching GPUs.</span><br><span class="line"># This feature is currently supported for the following DE&#x2F;WM :</span><br><span class="line"># KDE Plasma, GNOME, XFCE, Deepin, i3, Openbox, AwesomeWM, bspwm</span><br><span class="line"># If this option is disabled or you use a different desktop environment,</span><br><span class="line"># GPU switching only becomes effective at the next graphical session login.</span><br><span class="line">auto_logout&#x3D;yes</span><br><span class="line"></span><br><span class="line"># The mode used with startup mode ac_auto when not connected to AC.</span><br><span class="line"># Possible values : amd, intel, hybrid-amd, hybrid-intel</span><br><span class="line">ac_auto_battery_mode&#x3D;amd</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># The mode used with startup mode ac_auto when connected to AC.</span><br><span class="line"># Possible values : hybrid, nvidia</span><br><span class="line">ac_auto_extpower_mode&#x3D;nvidia</span><br><span class="line"></span><br><span class="line">[intel]</span><br><span class="line"></span><br><span class="line"># Driver to use for the Intel GPU. Possible values : modesetting, intel</span><br><span class="line"># To use the intel driver, you need to install the package &quot;xf86-video-intel&quot;.</span><br><span class="line">driver&#x3D;modesetting</span><br><span class="line"></span><br><span class="line"># Acceleration method (corresponds to AccelMethod in the Xorg configuration).</span><br><span class="line"># Only applies to the intel driver.</span><br><span class="line"># Possible values : sna, xna</span><br><span class="line"># Leave blank for the default (no option specified)</span><br><span class="line">accel&#x3D;</span><br><span class="line"></span><br><span class="line"># Enable TearFree option in the Xorg configuration.</span><br><span class="line"># Only applies to the intel driver.</span><br><span class="line"># Possible values : yes, no</span><br><span class="line"># Leave blank for the default (no option specified)</span><br><span class="line">tearfree&#x3D;</span><br><span class="line"></span><br><span class="line"># DRI version. Possible values : 2, 3</span><br><span class="line">DRI&#x3D;3</span><br><span class="line"></span><br><span class="line"># Whether or not to enable modesetting for the nouveau driver.</span><br><span class="line"># Does not affect modesetting for the Intel GPU driver !</span><br><span class="line"># This option only matters if you use nouveau as the switching backend.</span><br><span class="line">modeset&#x3D;yes</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[amd]</span><br><span class="line"></span><br><span class="line"># Driver to use for the AMD GPU. Possible values : modesetting, amdgpu</span><br><span class="line"># To use the amdgpu driver, you need to install the package &quot;xf86-video-amdgpu&quot;.</span><br><span class="line">driver&#x3D;amdgpu</span><br><span class="line"></span><br><span class="line"># Enable TearFree option in the Xorg configuration.</span><br><span class="line"># Only applies to the amdgpu driver.</span><br><span class="line"># Possible values : yes, no</span><br><span class="line"># Leave blank for the default (no option specified)</span><br><span class="line">tearfree&#x3D;</span><br><span class="line"></span><br><span class="line"># DRI version. Possible values : 2, 3</span><br><span class="line">DRI&#x3D;3</span><br><span class="line"></span><br><span class="line"># Whether or not to enable modesetting for the nouveau driver.</span><br><span class="line"># Does not affect modesetting for the AMD GPU driver !</span><br><span class="line"># This option only matters if you use nouveau as the switching backend.</span><br><span class="line">modeset&#x3D;yes</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[nvidia]</span><br><span class="line"></span><br><span class="line"># Whether or not to enable modesetting. Required for PRIME Synchronization (which prevents tearing).</span><br><span class="line">modeset&#x3D;yes</span><br><span class="line"></span><br><span class="line"># Whether or not to enable the NVreg_UsePageAttributeTable option in the Nvidia driver.</span><br><span class="line"># Recommended, can cause poor CPU performance otherwise.</span><br><span class="line">PAT&#x3D;yes</span><br><span class="line"></span><br><span class="line"># DPI value. This will be set using the Xsetup script passed to your login manager.</span><br><span class="line"># It will run the command</span><br><span class="line"># xrandr --dpi &lt;DPI&gt;</span><br><span class="line"># Leave blank for the default (the above command will not be run).</span><br><span class="line">DPI&#x3D;96</span><br><span class="line"></span><br><span class="line"># If you&#39;re running an updated version of xorg-server (let&#39;s say to get PRIME Render offload enabled),</span><br><span class="line"># the nvidia driver may not load because of an ABI version mismatch. Setting this flag to &quot;yes&quot;</span><br><span class="line"># will allow the loading of the nvidia driver.</span><br><span class="line">ignore_abi&#x3D;no</span><br><span class="line"></span><br><span class="line"># Set to yes if you want to use optimus-manager with external Nvidia GPUs (experimental)</span><br><span class="line">allow_external_gpus&#x3D;no</span><br><span class="line"></span><br><span class="line"># Comma-separated list of Nvidia-specific options to apply.</span><br><span class="line"># Available options :</span><br><span class="line"># - overclocking : enable CoolBits in the Xorg configuration, which unlocks clocking options</span><br><span class="line">#   in the Nvidia control panel. Note: does not work in hybrid mode.</span><br><span class="line"># - triple_buffer : enable triple buffering.</span><br><span class="line">options&#x3D;</span><br></pre></td></tr></table></figure>
+
+<p>关于我的这份配置文件：</p>
+<ul>
+<li>switching method不使用bbswitch是因为使用集成显卡的时候通过bbswitch关闭独立显卡会导致电脑的风扇以最高转速狂转，可能是因为关闭了独立显卡电源之后，系统无法正常读取独显温度导致将风扇调至最高转速，暂时没有找到一个比较靠谱的解决方法，所以就先用none，也许未来BIOS升级之后能解决这个问题</li>
+<li>正是因为switching method选择了none，所以把pci_power_control启用了，让PCI power management管理独显的电源</li>
+<li>AMD的driver使用amdgpu</li>
+<li>其余配置基本都是默认配置</li>
+</ul>
+<p>一些都配置好了就重启电脑吧，如果没有什么意外的话，Optimus Manager已经正常工作了。</p>
+<h3 id="Optimus-Manager用法"><a href="#Optimus-Manager用法" class="headerlink" title="Optimus Manager用法"></a>Optimus Manager用法</h3><ul>
+<li><p>切换到NVIDIA：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optimus-manager --switch nvidia</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>切换到AMD：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optimus-manager --switch amd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置开机使用AMD：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optimus-manager --<span class="built_in">set</span>-startup=amd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>显示当前模式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optimus-manager --<span class="built_in">print</span>-mode</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>显示开机使用的模式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optimus-manager --<span class="built_in">print</span>-startup</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更多用法：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optimus-manager --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="Optimus-Manager-GUI"><a href="#Optimus-Manager-GUI" class="headerlink" title="Optimus Manager GUI"></a>Optimus Manager GUI</h3><ul>
+<li><p><a href="https://github.com/Shatur95/optimus-manager-qt" target="_blank" rel="noopener">Optimus Manager Qt</a></p>
+<img src="/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/optimus-manager-qt.png" class="" title="optimus-manager-qt">
+</li>
+<li><p>Argos Script For Optimus-Manager</p>
+<img src="/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/argos-optimus-manager.png" class="" title="argos-optimus-manager">
+
+<p>由于<a href="https://github.com/inzar98/optimus-manager-argos" target="_blank" rel="noopener">原版的optimus-manager-argos</a>不支持AMD显卡的切换，同时也停止维护了，所以我Fork了一份，加上了AMD的支持：<a href="https://github.com/LGiki/optimus-manager-argos" target="_blank" rel="noopener">https://github.com/LGiki/optimus-manager-argos</a></p>
+</li>
+</ul>
+<h2 id="触摸板"><a href="#触摸板" class="headerlink" title="触摸板"></a>触摸板</h2><p>是的，这台机器的触摸板在Linux下无法正常使用，触摸跟按键都没有任何反应。</p>
+<p>在内核日志上可以找到关于触摸板的报错内容：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[    1.981868] i2c_hid i2c-MSFT0001:00: supply vdd not found, using dummy regulator</span><br><span class="line">[    1.981883] i2c_hid i2c-MSFT0001:00: supply vddl not found, using dummy regulator</span><br><span class="line">[    7.064976] i2c_hid i2c-MSFT0001:00: failed to reset device.</span><br><span class="line">[   13.251401] i2c_hid i2c-MSFT0001:00: failed to reset device.</span><br><span class="line">[   19.438327] i2c_hid i2c-MSFT0001:00: failed to reset device.</span><br><span class="line">[   25.624986] i2c_hid i2c-MSFT0001:00: failed to reset device.</span><br><span class="line">[   26.638144] i2c_hid i2c-MSFT0001:00: can&#39;t add hid device: -61</span><br><span class="line">[   26.638591] i2c_hid: probe of i2c-MSFT0001:00 failed with error -61</span><br></pre></td></tr></table></figure>
+
+<p>找到了一个相关的讨论：<a href="https://bugzilla.kernel.org/show_bug.cgi?id=207759" target="_blank" rel="noopener">https://bugzilla.kernel.org/show_bug.cgi?id=207759</a></p>
+<p>因为我日常几乎用不到笔记本的触摸板，平时都是用鼠标，所以也懒得再去研究这个问题了，说不定随着内核的更新，触摸板突然就能用了呢（想peach）。</p>
+]]></content>
+      <categories>
+        <category>开箱</category>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>开箱</tag>
+        <tag>体验</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>为什么中国亲戚总是喜欢给建议？</title>
     <url>/2020/06/08/why-chinese-relatives-always-like-to-give-fking-advice/</url>
     <content><![CDATA[<p>为什么中国亲戚总是喜欢给建议？</p>
