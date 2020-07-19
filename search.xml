@@ -140,7 +140,7 @@
   <entry>
     <title>通过VNC为Linux扩展第二显示器</title>
     <url>/2020/06/08/extending-desktop-over-vnc/</url>
-    <content><![CDATA[<p>这篇文章是旧博客的备份恢复，因为时间久远，其中的信息可能已经有所发展或是发生改变，仅供参考。</p>
+    <content><![CDATA[<p>这篇文章是旧博客的备份恢复，因为时间久远，其中的信息可能已经过时，仅供参考。</p>
 <p>手上有一台吃灰挺久了的安卓平板，一直没有怎么使用，更多的是用来调试 Android App 以及偶尔拿它来看看视频或者盖泡面。</p>
 <p>最近写代码越发觉得笔记本单屏很难受，查文档得在Chrome跟IDE之间来回切换。而又苦于没有钱买显示器，并且宿舍也没有这么大的地方能够同时放下笔记本跟显示器。就想着能否将这平板利用起来，用它来当电脑的扩展显示器，因为我日常使用比较多的是ArchLinux，Windows基本只用来打游戏，所以就开始研究起如何在Linux下将平板作为扩展显示器。然后真就在Arch Linux Forums上找到了一篇<a href="https://bbs.archlinux.org/viewtopic.php?id=191555" target="_blank" rel="noopener">帖子</a>描述了通过VNC为Linux扩展第二显示器的方法。不过这个方法中有些步骤在我的电脑上有点问题，需要修改一下才能正常使用。</p>
 <p>下面就记录一下如何通过VNC为Linux扩展第二显示器。</p>
@@ -351,7 +351,6 @@
 <p>因为我日常几乎用不到笔记本的触摸板，平时都是用鼠标，所以也懒得再去研究这个问题了，说不定随着内核的更新，触摸板突然就能用了呢（想peach）。</p>
 ]]></content>
       <categories>
-        <category>开箱</category>
         <category>Linux</category>
       </categories>
       <tags>
