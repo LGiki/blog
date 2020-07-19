@@ -21,6 +21,93 @@
       </tags>
   </entry>
   <entry>
+    <title>国行Z500M(P027)刷入国际版固件及Root权限的获取</title>
+    <url>/2020/07/19/convert-z500m-from-CN-to-WW-and-root/</url>
+    <content><![CDATA[<p>这篇文章依然是来自于之前的旧博客，本来是不想恢复这篇博客的，但是偶然间发现这篇博客被某个恶心的采集站给采集过去了，并且出处信息全无。我一直以来就很讨厌这种把别人的劳动成果直接拿过来当成自己成果的行为。所以想想还是把这篇文章恢复了，并适当进行修改，文章里面记录的刷入国际版固件和获取Root权限的方法至今依旧可用。</p>
+<a id="more"></a>
+
+<p>手上有台一直放着吃灰的平板，华硕的 Zenpad 3S 10，型号是 P027，在上篇博文介绍的《<a href="https://lgiki.net/2020/06/08/extending-desktop-over-vnc/">通过 VNC 为 Linux 扩展第二显示器</a>》，我就是拿它当来当电脑的扩展显示器的，整体用下来效果还不错，写代码看文档方便多了，就是屏幕一直亮着还是挺费电的。</p>
+<p>作为一个喜欢折腾各种电子产品的人，对于手上的这个平板当然还是想拿来折腾一下。这个平板有多个版本，我手上的是国行的，是最蛋疼的一个版本，ASUS 官方一直没给国行版本的 P027 更新系统，在国际版已经更新到 Android N (7.0) 很长一段时间了之后，国行版还是没有收到任何更新，一直停留在 Android M (6.0) ，多次找官方反馈国行版本的系统更新问题之后给的答复始终是：<del>更新系统可能导致系统不稳定，所以国行版本暂时没有更新计划</del>。喵喵喵？那为啥国际版更新了系统就不会不稳定？</p>
+<p>没办法，那就只能自己寻找办法啦。毕竟 Android 是开放的，只要有一定的动手能力，那么就一定可以丰衣足食！</p>
+<p>我首先想到的是下载国际版的固件尝试通过官方 Rec 刷入，于是就屁颠屁颠地跑到 ASUS 官方上找到了这个平板的固件下载页面，下载了最新的国际版固件，然后进官方 REC，开刷！然后…果不其然失败了。果然事情不会这么简单，看了一下 ROM 的 <code>updater-script</code> 文件，即刷机脚本，在这个文件的开头可以找到这么一句话：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ifelse(  getprop(<span class="string">"ro.product.name"</span>) == <span class="string">"OPEN_Zenpad"</span>, ui_print(<span class="string">"OPEN SKU device"</span>), (</span><br><span class="line">getprop(<span class="string">"ro.product.name"</span>) == <span class="string">"WW_P027"</span> || abort(<span class="string">"This package is for "</span>WW_P027<span class="string">" devices; this is a "</span><span class="string">" + getprop("</span>ro.product.name<span class="string">") + "</span><span class="string">"."</span>);</span><br><span class="line">) );</span><br></pre></td></tr></table></figure>
+
+<p>看来官方还是留了一手，在刷入之前会先判断你的 product.name ，如果不是当前刷机包对应的版本直接退出安装过程。阻止了你在各个版本之间的互刷。暂时也没啥办法，毕竟官方 Rec 只能刷入官方签名的刷机包。</p>
+<p>之后想到的就是尝试 Root，但是无一例外也失败了，其实在 XDA 上已经有人研究出这个平板的<a href="https://forum.xda-developers.com/android/development/tool-unlock-bootloader-asus-zenpad-10-t3730909" target="_blank" rel="noopener">解锁工具</a>以及在 Android N 下的 Root 方法了，甚至 <a href="https://forum.xda-developers.com/zenpad-10/development/twrp-asus-zenpad-3s-10-z500m-t3758333" target="_blank" rel="noopener">TWRP</a> 都已经有人编译好了，但是这些方法在 Android M 下用不了。不过之前在寻找 Root 的方法的时候在 <code>CN_13.6.6.2</code> 这个版本的固件上发现了存在 <a href="https://en.wikipedia.org/wiki/Dirty_COW" target="_blank" rel="noopener">Dirty COW</a> 漏洞，但是后来由于考试比较忙，一直没时间深入研究可否利用该漏洞 Root。</p>
+<h1 id="需要"><a href="#需要" class="headerlink" title="需要"></a>需要</h1><ul>
+<li>能正常通过USB连接平板的电脑（需要执行Fastboot和ADB指令）</li>
+<li>CN固件的ASUS Z500M，且有充足的电量</li>
+<li>连接稳定的数据线</li>
+<li>一定的命令行使用经验</li>
+<li>知道如何在开机的时候跳过或完成Google的设置向导（国际版固件带有Google Play框架）</li>
+<li>胆大心细</li>
+<li><strong>考虑清楚自己是否一定需要Root权限</strong></li>
+</ul>
+<h1 id="刷入国际版固件"><a href="#刷入国际版固件" class="headerlink" title="刷入国际版固件"></a>刷入国际版固件</h1><h2 id="备份你的所有个人数据"><a href="#备份你的所有个人数据" class="headerlink" title="备份你的所有个人数据"></a>备份你的所有个人数据</h2><p>做任何风险比较大的操作之前切记：<strong>备份所有的数据！备份所有的数据！备份所有的数据！</strong></p>
+<h2 id="通过Fastboot刷入国际版固件"><a href="#通过Fastboot刷入国际版固件" class="headerlink" title="通过Fastboot刷入国际版固件"></a>通过Fastboot刷入国际版固件</h2><p>常规方法无法在国行CN版的系统上刷入国际版WW固件，所以这里需要一个小trick，在Fastboot模式下刷入国际版的固件。</p>
+<p>首先下载这个文件并解压：</p>
+<blockquote>
+<p>链接: <a href="https://pan.baidu.com/s/1hyPKSLdXIpQr6d-c2n9CoQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1hyPKSLdXIpQr6d-c2n9CoQ</a></p>
+<p>提取码: a72k</p>
+<p>MD5: 418ccfb7f73078d1f44dfe839b31f92c</p>
+<p>SHA256: cb45da6d6e022dc3daa51507b763f8afc8c868ecf5a2fcb8fefdfc7223f0772c</p>
+</blockquote>
+<p>然后把平板关机，通过 <code>音量下 + 电源键</code> 开机，之后就会进入到一个启动选择界面。</p>
+<p>在这个界面里：<strong>音量下是切换不同的选项，音量上是确认</strong>，这里我们通过音量下键让末尾的光标指向<code>Fastboot</code>，并按音量上确认，这样就成功进入了Fastboot模式。</p>
+<p>进入到Fastboot模式之后，通过数据线将平板和电脑连接起来，确认电脑已经成功识别并且自动安装好了平板的相关驱动。</p>
+<p>之后就可以找到解压出来的文件里面的 <code>flashall.cmd</code> 文件运行，这是一个批处理文件，会自动通过Fastboot刷入国际版固件。</p>
+<p>然后你可以泡杯 <del>Java</del> (Coffee)，等待刷机完成。具体刷入用了多长时间我也记不清了，反正屏幕上会一直滚动刷入的日志，直到最后如果看到 <code>Download_PASS</code> 就是刷入成功了。</p>
+<p>刷入国际版固件成功之后平板会自动重启，第一次重启大概需要 5 分钟左右的时间。重启完开机之后会进入首次开机设置界面，建议在这个设置界面上不要连接WiFi，等进入到桌面之后再连接 WiFi。</p>
+<p>到这里，你已经成功从国行版固件刷入到国际版固件了。不过通过Fastboot刷入的国际版固件并不是最新的，还是Android M，所以还需要进一步通过官方固件升级到最新版本，直接到官方网站下载最新的国际版固件（<code>WW_V14.0210.1806.33</code>）：<a href="https://www.asus.com.cn/Tablets/ASUS-ZenPad-3S-10-Z500M/HelpDesk_BIOS/，下载之后放到平板内部存储的根目录下，之后系统通知栏会提示发现系统更新文件，是否立即更新，选择更新，然后等待系统自动更新完成即可。" target="_blank" rel="noopener">https://www.asus.com.cn/Tablets/ASUS-ZenPad-3S-10-Z500M/HelpDesk_BIOS/，下载之后放到平板内部存储的根目录下，之后系统通知栏会提示发现系统更新文件，是否立即更新，选择更新，然后等待系统自动更新完成即可。</a></p>
+<p>自动更新完成之后到系统设置里面的“关于”中就能看到已经升级到 Android 7.0 了。</p>
+<h1 id="Root-it"><a href="#Root-it" class="headerlink" title="Root it"></a>Root it</h1><h2 id="解锁Bootloader"><a href="#解锁Bootloader" class="headerlink" title="解锁Bootloader"></a>解锁Bootloader</h2><p>解锁Bootloader有两种选择，可以通过官方提供的解锁工具进行解锁，也可以使用XDA上的第三方解锁工具。这里我是通过XDA上的第三方解锁工具进行解锁的，因为我使用官方的解锁工具一直无法成功解锁。</p>
+<h3 id="通过官方解锁工具解锁"><a href="#通过官方解锁工具解锁" class="headerlink" title="通过官方解锁工具解锁"></a>通过官方解锁工具解锁</h3><p>官方解锁工具的下载链接是：<a href="https://dlsvr04.asus.com/pub/ASUS/EeePAD/Zenpad/Z500M/0823-1812_SIGNED_UnlockTool_9.1.0.6_180806_fulldpi.apk.zip，下载之后解压出来是个" target="_blank" rel="noopener">https://dlsvr04.asus.com/pub/ASUS/EeePAD/Zenpad/Z500M/0823-1812_SIGNED_UnlockTool_9.1.0.6_180806_fulldpi.apk.zip，下载之后解压出来是个</a> apk 文件，安装上打开，之后根据提示一步步操作即可。</p>
+<h3 id="通过XDA上的第三方工具解锁"><a href="#通过XDA上的第三方工具解锁" class="headerlink" title="通过XDA上的第三方工具解锁"></a>通过XDA上的第三方工具解锁</h3><p>由于我一直无法通过官方解锁工具成功解锁 Bootloader ，所以只好选择 XDA 上的第三方解锁工具进行解锁。这是第三方解锁工具的帖子链接：<a href="https://forum.xda-developers.com/android/development/tool-unlock-bootloader-asus-zenpad-10-t3730909。帖子里面有详细的说明，有两种解锁方法，这里选择第一种方法。" target="_blank" rel="noopener">https://forum.xda-developers.com/android/development/tool-unlock-bootloader-asus-zenpad-10-t3730909。帖子里面有详细的说明，有两种解锁方法，这里选择第一种方法。</a></p>
+<h4 id="获取临时Root权限"><a href="#获取临时Root权限" class="headerlink" title="获取临时Root权限"></a>获取临时Root权限</h4><p>首先需要获取临时 Root 权限，其实获取的方法很简单，就两个步骤：通过 Magisk 修补 Boot -&gt; 通过 Fastboot 启动修补过的 Boot。下面详细说明：</p>
+<h5 id="通过Magisk修补Boot"><a href="#通过Magisk修补Boot" class="headerlink" title="通过Magisk修补Boot"></a>通过Magisk修补Boot</h5><p>首先从 ASUS 官网下载的最新国际版刷机包（就是前文下载的那个 <code>WW_V14.0210.1806.33</code> 的刷机包）中解压出 <code>boot.img</code> 文件，然后将其放到平板中你能方便找到的任意地方。</p>
+<p>平板上安装 Magisk Manager 并打开，选择<strong>安装</strong>，之后会有个<strong>选择安装方法</strong>的对话框，这里需要点击<strong>选择并修补一个文件</strong>，之后就会弹出一个文件选择框了，这里就选择刚刚解压出来的 <code>boot.img</code> 文件就行了，之后等待 Magisk Manager 自动修补 <code>boot.img</code> 文件，修补完成如下图所示：</p>
+<img src="/2020/07/19/convert-z500m-from-CN-to-WW-and-root/Screenshot_20200719-181620.png" class="" title="Patch_boot_image">
+
+<p>之后就能在平板内部存储的 Download 文件夹下找到一个名叫 <code>magisk_patched.img</code> 文件了。将这个文件拷贝到电脑上。</p>
+<h5 id="通过Fastboot启动Magisk-Patched-Boot"><a href="#通过Fastboot启动Magisk-Patched-Boot" class="headerlink" title="通过Fastboot启动Magisk Patched Boot"></a>通过Fastboot启动Magisk Patched Boot</h5><p>之后平板关机进入 Fastboot 模式，并连接电脑，然后电脑上打开 CMD，通过以下指令使用 <code>magisk_patched.img</code> 文件引导平板开机：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">fastboot boot /path/to/magisk_patched.img</span><br></pre></td></tr></table></figure>
+
+<p>PS：上面这个命令里面的<code>/path/to/magisk_patched.img</code>意思是magisk_patched.img这个文件的路径，可以先输入<code>fastboot boot</code>，再输入一个空格，之后直接将magisk_patched.img拉入终端中，终端会自动填入所拉入文件的路径。</p>
+<p>这里如果你电脑上没有fastboot相关工具的话，可以使用cd指令切换当前工作目录到前文下载下来的线刷固件解压出来的文件夹下，这个里面有自带fastboot工具以及下文会用到的adb工具。</p>
+<p>开机之后，再次打开Magisk Manager就能看到已经显示Magisk已安装了，但是此时还是临时的Root权限，重启就会没掉。</p>
+<h4 id="解锁Bootloader-1"><a href="#解锁Bootloader-1" class="headerlink" title="解锁Bootloader"></a>解锁Bootloader</h4><p>有了临时 Root 权限我们就能解锁 Bootloader 啦！首先到这个<a href="https://forum.xda-developers.com/android/development/tool-unlock-bootloader-asus-zenpad-10-t3730909" target="_blank" rel="noopener">帖子</a>里面下载解锁工具：<code>unlock_tool_z500m_v0.6a.zip</code>，下载之后解压，放到平板上的 <code>/data/local/tmp</code> 目录下，具体如何操作这里不再详细说明，这一步我是使用 Root Explorer 完成的。</p>
+<p>放好这个文件之后，数据线连接平板和电脑，平板记得打开 ADB 调试，然后执行以下指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">adb shell</span><br><span class="line"><span class="built_in">cd</span> /data/<span class="built_in">local</span>/tmp</span><br><span class="line">sh unlockbl.sh</span><br></pre></td></tr></table></figure>
+
+<p>之后按照解锁脚本的提示，选择 <code>1. Unlock bootloader</code> ，之后根据提示输入 <code>Yes, I want to unlock</code> ，然后脚本就会自动进行解锁，完成之后如果看到以下提示就说明解锁成功了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Done!</span><br><span class="line">Please reboot your device.</span><br></pre></td></tr></table></figure>
+
+<p>重启平板，可以看到开机的时候会显示<code>Orange State</code>，这就说明解锁成功了。</p>
+<h2 id="刷入Magisk-Patched-Boot"><a href="#刷入Magisk-Patched-Boot" class="headerlink" title="刷入Magisk Patched Boot"></a>刷入Magisk Patched Boot</h2><p>解锁了 Bootloader 之后就可以对平板做任何修改了，下面讲讲如何获取永久 Root 权限（也就是如何刷入Magisk Patched Boot）。</p>
+<p>依旧使用前文的方法，通过<code>fastboot boot /path/to/magisk_patched.img</code>开机，以获取临时的Root权限，然后打开 Magisk Manager，选择安装 Magisk，然后还是会弹出<strong>选择安装方法</strong>的对话框，这时候就要选择<strong>直接安装(推荐)</strong>了，之后 Magisk Manager 就会自动修补当前系统的 Boot 分区，并将其刷入。等提示成功之后，重启平板就会发现 Root 权限一直都在了。</p>
+<p>应该也可通过<code>fastboot flash</code>命令直接在Fastboot模式下刷入magisk_patched.img，这个我也没尝试过，感兴趣的可以试试。</p>
+<h1 id="刷入TWRP"><a href="#刷入TWRP" class="headerlink" title="刷入TWRP"></a>刷入TWRP</h1><p>之后就是刷入 TWRP 了，有了第三方 Rec 就可以为所欲为了！</p>
+<p>首先到这个帖子里下载 <code>twrp-3.2.1-0-z500m.zip</code> ：<a href="https://forum.xda-developers.com/zenpad-10/development/twrp-asus-zenpad-3s-10-z500m-t3758333，下载完成之后解压，可以得到一个" target="_blank" rel="noopener">https://forum.xda-developers.com/zenpad-10/development/twrp-asus-zenpad-3s-10-z500m-t3758333，下载完成之后解压，可以得到一个</a> img 文件，这个就是 TWRP 的镜像了。将这个文件复制到平板中你能方便找到的地方，当然电脑上也要留一份这个文件，下面需要用到。</p>
+<p>依旧很简单，平板关机并启动到 Fastboot，数据线连接到电脑，并使用以下指令使用 <code>twrp-3.2.1-0-z500m.img</code> 引导平板：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">fastboot boot /path/to/twrp-3.2.1-0-z500m.img</span><br></pre></td></tr></table></figure>
+
+<p>之后平板会启动到临时 TWRP 中，这时候可能会有一个警告界面，选择 <code>Keep System Read-only</code>。</p>
+<p>然后就会进入到 TWRP 的主界面了，选择 <code>INSTALL</code> ，选择底部的 <code>Install Image</code> ，之后找到并选择你刚刚复制到平板里面的 <code>twrp-3.2.1-0-z500m.img</code> 文件，之后会出现刷入确认界面，这里选择刷入的分区为 <code>Recovery</code>，之后滑动底部滑块即可刷入 Recovery。</p>
+<p>到这里为止，你就成功刷入 TWRP 了，重启到 Recovery 就可以直接进入到 TWRP 中。之后你就可以对你的平板为所欲为了！</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>以上操作只是记录我的操作过程，具体可以灵活操作，例如你也可以先刷入 TWRP，之后再在 TWRP 里面刷入 Magisk 以获取永久 Root 权限。</p>
+<p>最后，补张效果图：</p>
+<img src="/2020/07/19/convert-z500m-from-CN-to-WW-and-root/Screenshot_20200719-181519.png" class="" title="Magisk">]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>折腾</tag>
+        <tag>安卓</tag>
+        <tag>Android</tag>
+        <tag>流水账</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>写于本科毕业之际</title>
     <url>/2020/05/25/end-four-years-at-jmu/</url>
     <content><![CDATA[<p>5月23号毕业论文线上答辩结束，整理答辩记录的时候才意识到本科就这么毕业了，“6月份分批安排学生回宿舍取行李，当天取完，当天回去，不能逗留”，想象过千万种毕业时的场景，却未曾想过本科生活会以这样的方式画上句号。甚至学士服👨‍🎓都没来得及穿，毕业照也没拍，毕业典礼也改成了☁️毕业典礼。按照往年的传统，学校还会请毕业生们在食堂免费吃一顿丰盛的自助餐，但是今年这情况显然是不可能了，谁能想到春节回家前在食堂吃的最后一餐竟然成了本科在食堂吃的最后一餐。想念西苑食堂二楼阿姨热情的招呼以及万人食堂二楼偏厅的炸🍗。在学校的时候天天吐槽学校的饭菜多么多么难吃，现在几个月不吃学校食堂反倒觉得食堂的饭菜很香。<a id="more"></a></p>
@@ -126,8 +213,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>折腾</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
