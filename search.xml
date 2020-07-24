@@ -236,7 +236,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title>如何绘制精美的神经网络模型结构图</title>
+    <title>如何绘制出精美的神经网络模型结构图</title>
     <url>/2020/07/24/how-to-visualize-neural-network-architectures/</url>
     <content><![CDATA[<p>最近需要绘制机器学习的模型结构图，但是通过<a href="https://draw.io/" target="_blank" rel="noopener">draw.io</a>画出来的图总感觉不如别人paper里的好看，所以就去查找了一下有没有用于绘制机器学习模型结构图的工具，顺便整理成这篇文章。虽然这篇文章标题里说的是“如何绘制精美的神经网络模型结构图”，但实际上这篇文章更多的是收集一些神经网络模型的可视化工具。希望能对同样遇到这个问题的人有所帮助。</p>
 <a id="more"></a>
