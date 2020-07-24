@@ -241,7 +241,7 @@
     <content><![CDATA[<p>最近需要绘制机器学习的模型结构图，但是通过<a href="https://draw.io/" target="_blank" rel="noopener">draw.io</a>画出来的图总感觉不如别人paper里的好看，所以就去查找了一下有没有用于绘制机器学习模型结构图的工具，顺便整理成这篇文章。虽然这篇文章标题里说的是“如何绘制精美的神经网络模型结构图”，但实际上这篇文章更多的是收集一些神经网络模型的可视化工具。希望能对同样遇到这个问题的人有所帮助。</p>
 <a id="more"></a>
 
-<p>PS：可以在这个页面左侧的文章引导框里选择来快速定位到某个工具</p>
+<p>PS：可以通过这个页面左侧的文章引导框快速定位到某个工具</p>
 <h1 id="框架无关"><a href="#框架无关" class="headerlink" title="框架无关"></a>框架无关</h1><h2 id="NN-SVG"><a href="#NN-SVG" class="headerlink" title="NN-SVG"></a>NN-SVG</h2><p>Github地址：<a href="https://github.com/alexlenail/NN-SVG" target="_blank" rel="noopener">https://github.com/alexlenail/NN-SVG</a></p>
 <p>使用方式：浏览器</p>
 <p>在线使用：<a href="http://alexlenail.me/NN-SVG/LeNet.html" target="_blank" rel="noopener">http://alexlenail.me/NN-SVG/LeNet.html</a></p>
