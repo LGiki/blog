@@ -312,6 +312,11 @@
 <p>可交互的卷积网络特征可视化</p>
 <img src="/2020/07/24/how-to-visualize-neural-network-architectures/quiver.gif" class="" title="Quiver">
 
+<h3 id="Net2Vis"><a href="#Net2Vis" class="headerlink" title="Net2Vis"></a>Net2Vis</h3><p>主页：<a href="https://viscom.net2vis.uni-ulm.de/" target="_blank" rel="noopener">https://viscom.net2vis.uni-ulm.de/</a></p>
+<p>使用方式：浏览器</p>
+<p>在线编辑代码，在<code>get_model()</code>方法中返回一个Keras模型就能绘制出相应的结构图</p>
+<img src="/2020/07/24/how-to-visualize-neural-network-architectures/net2vis.png" class="" title="Net2Vis">
+
 <h2 id="Matlab"><a href="#Matlab" class="headerlink" title="Matlab"></a>Matlab</h2><h3 id="View-Neural-Network"><a href="#View-Neural-Network" class="headerlink" title="View Neural Network"></a>View Neural Network</h3><p>官方文档：<a href="http://www.mathworks.com/help/nnet/ref/view.html" target="_blank" rel="noopener">http://www.mathworks.com/help/nnet/ref/view.html</a></p>
 <img src="/2020/07/24/how-to-visualize-neural-network-architectures/matlab.png" class="" title="Matlab">
 
