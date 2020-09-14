@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://lib.baomitu.com/font-awesome/5.12.0-1/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lgiki.net","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="碎碎念最近开始读研了，来到了新的学校，最重要的就是赶紧把路由器折腾好，有一个可靠的网络连接，愉快地网上冲浪。虽然手机套餐是无限流量的，可以通过手机开热点给电脑等其他设备使用，但是宿舍区人特别多，基站的承载量根本没法满足这么多用户的上网需求，网络特别慢，断断续续的，并且所谓无限流量实际上也不是真正的无限流量，超过了一定额度之后是会限速的。 这里不得不吐槽一下新学校的网络，简直是垄断中的垄断，虽然是电">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为OpenWrt交叉编译MentoHUST">
+<meta property="og:url" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/index.html">
+<meta property="og:site_name" content="LGiki&#39;s Blog">
+<meta property="og:description" content="碎碎念最近开始读研了，来到了新的学校，最重要的就是赶紧把路由器折腾好，有一个可靠的网络连接，愉快地网上冲浪。虽然手机套餐是无限流量的，可以通过手机开热点给电脑等其他设备使用，但是宿舍区人特别多，基站的承载量根本没法满足这么多用户的上网需求，网络特别慢，断断续续的，并且所谓无限流量实际上也不是真正的无限流量，超过了一定额度之后是会限速的。 这里不得不吐槽一下新学校的网络，简直是垄断中的垄断，虽然是电">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/disable_auto_remove.png">
+<meta property="og:image" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/libpcap.png">
+<meta property="og:image" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/mentohust.png">
+<meta property="og:image" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/ipk.png">
+<meta property="og:image" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/luci.png">
+<meta property="article:published_time" content="2020-09-14T13:55:41.000Z">
+<meta property="article:modified_time" content="2020-09-14T14:16:49.112Z">
+<meta property="article:author" content="LGiki">
+<meta property="article:tag" content="OpenWrt">
+<meta property="article:tag" content="交叉编译">
+<meta property="article:tag" content="mentohust">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/disable_auto_remove.png">
+
+<link rel="canonical" href="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>为OpenWrt交叉编译MentoHUST | LGiki's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LGiki's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LGiki's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">愿每个人都能被这个世界温柔相待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-友情链接">
+
+    <a href="/links/" rel="section"><i class="fa fa-link fa-fw"></i>友情链接</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.webp">
+      <meta itemprop="name" content="LGiki">
+      <meta itemprop="description" content="Never limit yourself">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LGiki's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          为OpenWrt交叉编译MentoHUST
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-09-14 21:55:41 / 修改时间：22:16:49" itemprop="dateCreated datePublished" datetime="2020-09-14T21:55:41+08:00">2020-09-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%98%E8%85%BE/" itemprop="url" rel="index"><span itemprop="name">折腾</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>最近开始读研了，来到了新的学校，最重要的就是赶紧把路由器折腾好，有一个可靠的网络连接，愉快地网上冲浪。虽然手机套餐是无限流量的，可以通过手机开热点给电脑等其他设备使用，但是宿舍区人特别多，基站的承载量根本没法满足这么多用户的上网需求，网络特别慢，断断续续的，并且所谓无限流量实际上也不是真正的无限流量，超过了一定额度之后是会限速的。</p>
+<p>这里不得不吐槽一下新学校的网络，简直是垄断中的垄断，虽然是电信、移动和联通这三家运营商都提供校园网络，但是只有联通是通过锐捷认证，能拿到学校内网IP的，其他两家都是各自拉线，无法得到学校内网IP。这就意味着如果需要在宿舍使用学校内网的资源，就必须开通联通的宽带。这里联通的宽带只有50Mbps，比我本科时所用的联通宽带100Mbps速度还慢，而套餐价格却是我本科的两倍左右。特别想念本科学校提供的10元/月教育网，再加上联通10元/月的宽带，一个月20元就能享受到100Mbps的网络连接，且提供了IPv6。</p>
+<a id="more"></a>
+
+<p>再吐槽一下新学校的方方面面，食堂比本科贵了不少，虽然种类是丰富了一点，但是觉得贵出来的这些钱并不值得。宿舍区离教学区特别远，所以满世界都是电动车、自行车，走在路上都得特别小心，宿舍区也因为四处的电动车显得特别拥挤，特别讨厌这样的环境。宿舍很小，柜子破破烂烂的，阳台也很小，晾衣服的地方也极不合理，衣服很不容易晾干。</p>
+<p>如果可以，我真的是一刻都不想再待在这个破地方。本科的时候一直在骂本科的学校不好，到头来，真的觉得本科的学校是哪里都好。哎，有什么办法呢？读完研赶紧去工作吧。</p>
+<p>言归正传，今天来聊聊如何为OpenWrt交叉编译MentoHUST，让OpenWrt代替电脑完成锐捷认证。</p>
+<p>既然是要编译，首先肯定是需要准备编译环境的，主要就是交叉编译的工具链，幸运的是，OpenWrt已经为我们把所有需要的交叉编译工具链准备好了，我们只需要下载OpenWrt提供的SDK解压出来就能用了。</p>
+<p>下面就开始详细介绍一下交叉编译的流程。</p>
+<h1 id="需要的工具"><a href="#需要的工具" class="headerlink" title="需要的工具"></a>需要的工具</h1><ul>
+<li>Linux环境（大部分主流发行版均可，我自己使用的是ArchLinux，你也可以选择自己喜欢的发行版）</li>
+<li>OpenWrt SDK（下文会介绍）</li>
+<li>稳定可靠的网络连接</li>
+<li>耐心（编译因电脑配置的不同可能会需要较长的时间，需要耐心等待）</li>
+</ul>
+<h1 id="搭建编译环境"><a href="#搭建编译环境" class="headerlink" title="搭建编译环境"></a>搭建编译环境</h1><h2 id="安装编译工具"><a href="#安装编译工具" class="headerlink" title="安装编译工具"></a>安装编译工具</h2><p>这一步参考OpenWrt的官方Wiki：<a href="https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#examples_of_package_installations" target="_blank" rel="noopener">https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#examples_of_package_installations</a></p>
+<p>这个页面里针对各个Linux发行版都列出了所需的所有软件包，如果编译过程中还是有所欠缺，只需要根据报错信息安装对应的工具即可，这里不再详细展开。</p>
+<h2 id="下载OpenWrt-SDK并解压"><a href="#下载OpenWrt-SDK并解压" class="headerlink" title="下载OpenWrt SDK并解压"></a>下载OpenWrt SDK并解压</h2><p>下载OpenWrt SDK之前需要先确定你的路由器CPU平台，可以到OpenWrt官网上通过路由器的型号查询，也可以通过搜索引擎去搜索。相信已经为路由器刷过OpenWrt的都知道自己路由器对应的是哪个平台。</p>
+<p>这里我以我的Netgear WNDR3800举例，该路由器属于ar71xx平台，所以打开OpenWrt的<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/" target="_blank" rel="noopener">Download页面</a>（这里我使用tuna的镜像站以加快下载速度），可以看到有很多个目录，每个目录的名称对应的就是各个平台，这里我选择<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/ar71xx/" target="_blank" rel="noopener">ar71xx</a>，之后进入<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/ar71xx/generic/" target="_blank" rel="noopener">generic</a>目录，将页面拉到最底下可以看到：<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/ar71xx/generic/openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz" target="_blank" rel="noopener">openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz</a>，将其下载下来即可。</p>
+<p>下载完成之后，解压：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xvJf openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz</span><br></pre></td></tr></table></figure>
+
+<h2 id="同步MentoHUST源码"><a href="#同步MentoHUST源码" class="headerlink" title="同步MentoHUST源码"></a>同步MentoHUST源码</h2><p>这里不用原版的MentoHUST，而是使用已经为OpenWrt打包好的<a href="https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk" target="_blank" rel="noopener">MentoHUST-OpenWrt-ipk</a></p>
+<p>首先cd到OpenWrt SDK的目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64</span><br></pre></td></tr></table></figure>
+
+<p>然后通过git clone将MentoHUST源码同步到package目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk.git package/mentohust</span><br></pre></td></tr></table></figure>
+
+<h1 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h1><p>编译环境搭建完成之后就可以正式开始交叉编译了。</p>
+<h2 id="更新feeds"><a href="#更新feeds" class="headerlink" title="更新feeds"></a>更新feeds</h2><p>首先需要更新feeds：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./scripts/feeds update</span><br></pre></td></tr></table></figure>
+
+<p>然后安装libpcap feed：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./scripts/feeds install libpcap</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意，OpenWrt SDK编译libpcap时只会编译出libpcap.so而不会编译出libpcap.a，但是mentohust需要libpcap.a，所以需要修改一下libpcap的Makefile，编辑<code>package/feeds/base/libpcap/Makefile</code>文件，将其中的</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">define</span> Package/libpcap/install</span><br><span class="line">        <span class="variable">$(INSTALL_DIR)</span> $(1)/usr/lib</span><br><span class="line">        <span class="variable">$(CP)</span> <span class="variable">$(PKG_INSTALL_DIR)</span>/usr/lib/libpcap.so.* $(1)/usr/lib/</span><br><span class="line"><span class="keyword">endef</span></span><br></pre></td></tr></table></figure>
+
+<p>修改为：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">define</span> Package/libpcap/install</span><br><span class="line">        <span class="variable">$(INSTALL_DIR)</span> $(1)/usr/lib</span><br><span class="line">        <span class="variable">$(CP)</span> <span class="variable">$(PKG_INSTALL_DIR)</span>/usr/lib/libpcap.&#123;a,so*&#125; $(1)/usr/lib/</span><br><span class="line"><span class="keyword">endef</span></span><br></pre></td></tr></table></figure>
+
+<p>即让编译libpcap的时候同时编译出libpcap.a</p>
+<h2 id="menuconfig"><a href="#menuconfig" class="headerlink" title="menuconfig"></a>menuconfig</h2><p>接下来如要对编译配置文件进行简单的配置，这里直接使用menuconfig：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
+
+<p>这里需要关闭<code>Advanced configuration options (for developers)</code>中的<code>Automatic removal of build directories</code>：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/disable_auto_remove.png" class="" title="disable_auto_remove">
+
+<p>并确保<code>Libraries</code>下的<code>libpcap</code>为<code>M</code>：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/libpcap.png" class="" title="libpcap">
+
+<p><code>Network</code>下的<code>Ruijie</code>下的<code>mentohust</code>为<code>M</code>：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/mentohust.png" class="" title="mentohust">
+
+<p>这样menuconfig就完成了，保存一下退出即可</p>
+<h2 id="make"><a href="#make" class="headerlink" title="make!"></a>make!</h2><p>好了，到这一步所有的准备工作就都完成了，接下来就可以开始编译了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make package/mentohust/compile</span><br></pre></td></tr></table></figure>
+
+<p>这一步需要在线下载libpcap的源码，所以请确保有一个良好的网络连接</p>
+<p>如果没有什么意外情况的话，等编译完成之后就能在<code>bin/packages/mips_24kc/base</code>下找到libpcap和mentohust的ipk软件包了：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/ipk.png" class="" title="ipk">
+
+<h1 id="安装到OpenWrt"><a href="#安装到OpenWrt" class="headerlink" title="安装到OpenWrt"></a>安装到OpenWrt</h1><p>接下来就只需要把编译出来的这两个ipk软件包安装进OpenWrt路由器就行了</p>
+<h2 id="上传ipk到OpenWrt"><a href="#上传ipk到OpenWrt" class="headerlink" title="上传ipk到OpenWrt"></a>上传ipk到OpenWrt</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp libpcap1_1.9.1-2.1_mips_24kc.ipk root@192.168.1.1:/root/</span><br><span class="line">scp mentohust_0.3.1-1_mips_24kc.ipk root@192.168.1.1:/root/</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>SSH连接到OpenWrt路由器，然后执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">opkg install libpcap1_1.9.1-2.1_mips_24kc.ipk</span><br><span class="line">opkg install mentohust_0.3.1-1_mips_24kc.ipk</span><br></pre></td></tr></table></figure>
+
+<h1 id="MentoHUST-LuCI-App"><a href="#MentoHUST-LuCI-App" class="headerlink" title="MentoHUST LuCI App"></a>MentoHUST LuCI App</h1><p>将上面编译出来地libpcap和mentohust安装到OpenWrt之后就能ssh连接到路由器，在命令行下面使用mentohust命令进行锐捷认证了，但是通过命令行进行锐捷认证总是不方便的。所以我们还需要一个管理页面，通过浏览器就能管理mentohust的配置和运行状态。</p>
+<p>而因为管理页面只是执行一些命令的调用，并不需要像MentoHUST那样针对不同的CPU平台编译可执行文件，所以直接到这个仓库<a href="https://github.com/BoringCat/luci-app-mentohust的[Release](https://github.com/BoringCat/luci-app-mentohust/releases)页面下载作者编译好的ipk包然后跟前文一样使用`opkg" target="_blank" rel="noopener">https://github.com/BoringCat/luci-app-mentohust的[Release](https://github.com/BoringCat/luci-app-mentohust/releases)页面下载作者编译好的ipk包然后跟前文一样使用`opkg</a> install`安装到路由器即可。</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/luci.png" class="" title="luci">
+
+<p>至此，就可以愉快地让路由器代替电脑完成锐捷认证了，愉快享受网上冲浪的乐趣吧！XD</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>Buy me a cup of coffee</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="LGiki 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="LGiki 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>LGiki
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/" title="为OpenWrt交叉编译MentoHUST">http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OpenWrt/" rel="tag"># OpenWrt</a>
+              <a href="/tags/%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/" rel="tag"># 交叉编译</a>
+              <a href="/tags/mentohust/" rel="tag"># mentohust</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/24/how-to-visualize-neural-network-architectures/" rel="prev" title="如何绘制出精美的神经网络模型结构图">
+      <i class="fa fa-chevron-left"></i> 如何绘制出精美的神经网络模型结构图
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#碎碎念"><span class="nav-number">1.</span> <span class="nav-text">碎碎念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#需要的工具"><span class="nav-number"></span> <span class="nav-text">需要的工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#搭建编译环境"><span class="nav-number"></span> <span class="nav-text">搭建编译环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装编译工具"><span class="nav-number">1.</span> <span class="nav-text">安装编译工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载OpenWrt-SDK并解压"><span class="nav-number">2.</span> <span class="nav-text">下载OpenWrt SDK并解压</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同步MentoHUST源码"><span class="nav-number">3.</span> <span class="nav-text">同步MentoHUST源码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始编译"><span class="nav-number"></span> <span class="nav-text">开始编译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#更新feeds"><span class="nav-number">1.</span> <span class="nav-text">更新feeds</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#menuconfig"><span class="nav-number">2.</span> <span class="nav-text">menuconfig</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#make"><span class="nav-number">3.</span> <span class="nav-text">make!</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装到OpenWrt"><span class="nav-number"></span> <span class="nav-text">安装到OpenWrt</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#上传ipk到OpenWrt"><span class="nav-number">1.</span> <span class="nav-text">上传ipk到OpenWrt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MentoHUST-LuCI-App"><span class="nav-number"></span> <span class="nav-text">MentoHUST LuCI App</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LGiki"
+      src="/images/avatar.webp">
+  <p class="site-author-name" itemprop="name">LGiki</p>
+  <div class="site-description" itemprop="description">Never limit yourself</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LGiki" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LGiki" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/id/lgiki" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;id&#x2F;lgiki" rel="noopener" target="_blank"><i class="fab fa-steam fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://lgiki.net/atom.xml" title="RSS → https:&#x2F;&#x2F;lgiki.net&#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://alynx.one/" title="https:&#x2F;&#x2F;alynx.one" rel="noopener" target="_blank">Alynx</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LGiki</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">29k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">53 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="https://lib.baomitu.com/animejs/3.2.0/anime.min.js"></script>
+  <script src="https://lib.baomitu.com/medium-zoom/1.0.6/medium-zoom.min.js"></script>
+  <script src="https://lib.baomitu.com/pangu/4.0.7/pangu.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/disqusjs@1/dist/disqusjs.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/disqusjs@1/dist/disqus.js', () => {
+    window.dsqjs = new DisqusJS({
+      api       : 'https://disqus.skk.moe/disqus/' || 'https://disqus.com/api/',
+      apikey    : 'apsyL76zmQB6xB9cuRO7Zg2XxdzErIXqO8U5mW0IK4BZ0nvC1ygSauU7U3zHniuK',
+      shortname : 'lgikis-blog',
+      url       : "http://lgiki.net/2020/09/14/cross-compile-mentohust-for-openwrt/",
+      identifier: "2020/09/14/cross-compile-mentohust-for-openwrt/",
+      title     : "为OpenWrt交叉编译MentoHUST",
+    });
+  }, window.DisqusJS);
+});
+</script>
+
+</body>
+</html>

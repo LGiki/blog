@@ -108,6 +108,93 @@
       </tags>
   </entry>
   <entry>
+    <title>为OpenWrt交叉编译MentoHUST</title>
+    <url>/2020/09/14/cross-compile-mentohust-for-openwrt/</url>
+    <content><![CDATA[<h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>最近开始读研了，来到了新的学校，最重要的就是赶紧把路由器折腾好，有一个可靠的网络连接，愉快地网上冲浪。虽然手机套餐是无限流量的，可以通过手机开热点给电脑等其他设备使用，但是宿舍区人特别多，基站的承载量根本没法满足这么多用户的上网需求，网络特别慢，断断续续的，并且所谓无限流量实际上也不是真正的无限流量，超过了一定额度之后是会限速的。</p>
+<p>这里不得不吐槽一下新学校的网络，简直是垄断中的垄断，虽然是电信、移动和联通这三家运营商都提供校园网络，但是只有联通是通过锐捷认证，能拿到学校内网IP的，其他两家都是各自拉线，无法得到学校内网IP。这就意味着如果需要在宿舍使用学校内网的资源，就必须开通联通的宽带。这里联通的宽带只有50Mbps，比我本科时所用的联通宽带100Mbps速度还慢，而套餐价格却是我本科的两倍左右。特别想念本科学校提供的10元/月教育网，再加上联通10元/月的宽带，一个月20元就能享受到100Mbps的网络连接，且提供了IPv6。</p>
+<a id="more"></a>
+
+<p>再吐槽一下新学校的方方面面，食堂比本科贵了不少，虽然种类是丰富了一点，但是觉得贵出来的这些钱并不值得。宿舍区离教学区特别远，所以满世界都是电动车、自行车，走在路上都得特别小心，宿舍区也因为四处的电动车显得特别拥挤，特别讨厌这样的环境。宿舍很小，柜子破破烂烂的，阳台也很小，晾衣服的地方也极不合理，衣服很不容易晾干。</p>
+<p>如果可以，我真的是一刻都不想再待在这个破地方。本科的时候一直在骂本科的学校不好，到头来，真的觉得本科的学校是哪里都好。哎，有什么办法呢？读完研赶紧去工作吧。</p>
+<p>言归正传，今天来聊聊如何为OpenWrt交叉编译MentoHUST，让OpenWrt代替电脑完成锐捷认证。</p>
+<p>既然是要编译，首先肯定是需要准备编译环境的，主要就是交叉编译的工具链，幸运的是，OpenWrt已经为我们把所有需要的交叉编译工具链准备好了，我们只需要下载OpenWrt提供的SDK解压出来就能用了。</p>
+<p>下面就开始详细介绍一下交叉编译的流程。</p>
+<h1 id="需要的工具"><a href="#需要的工具" class="headerlink" title="需要的工具"></a>需要的工具</h1><ul>
+<li>Linux环境（大部分主流发行版均可，我自己使用的是ArchLinux，你也可以选择自己喜欢的发行版）</li>
+<li>OpenWrt SDK（下文会介绍）</li>
+<li>稳定可靠的网络连接</li>
+<li>耐心（编译因电脑配置的不同可能会需要较长的时间，需要耐心等待）</li>
+</ul>
+<h1 id="搭建编译环境"><a href="#搭建编译环境" class="headerlink" title="搭建编译环境"></a>搭建编译环境</h1><h2 id="安装编译工具"><a href="#安装编译工具" class="headerlink" title="安装编译工具"></a>安装编译工具</h2><p>这一步参考OpenWrt的官方Wiki：<a href="https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#examples_of_package_installations" target="_blank" rel="noopener">https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#examples_of_package_installations</a></p>
+<p>这个页面里针对各个Linux发行版都列出了所需的所有软件包，如果编译过程中还是有所欠缺，只需要根据报错信息安装对应的工具即可，这里不再详细展开。</p>
+<h2 id="下载OpenWrt-SDK并解压"><a href="#下载OpenWrt-SDK并解压" class="headerlink" title="下载OpenWrt SDK并解压"></a>下载OpenWrt SDK并解压</h2><p>下载OpenWrt SDK之前需要先确定你的路由器CPU平台，可以到OpenWrt官网上通过路由器的型号查询，也可以通过搜索引擎去搜索。相信已经为路由器刷过OpenWrt的都知道自己路由器对应的是哪个平台。</p>
+<p>这里我以我的Netgear WNDR3800举例，该路由器属于ar71xx平台，所以打开OpenWrt的<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/" target="_blank" rel="noopener">Download页面</a>（这里我使用tuna的镜像站以加快下载速度），可以看到有很多个目录，每个目录的名称对应的就是各个平台，这里我选择<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/ar71xx/" target="_blank" rel="noopener">ar71xx</a>，之后进入<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/ar71xx/generic/" target="_blank" rel="noopener">generic</a>目录，将页面拉到最底下可以看到：<a href="https://mirrors4.tuna.tsinghua.edu.cn/openwrt/releases/19.07.4/targets/ar71xx/generic/openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz" target="_blank" rel="noopener">openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz</a>，将其下载下来即可。</p>
+<p>下载完成之后，解压：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar xvJf openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz</span><br></pre></td></tr></table></figure>
+
+<h2 id="同步MentoHUST源码"><a href="#同步MentoHUST源码" class="headerlink" title="同步MentoHUST源码"></a>同步MentoHUST源码</h2><p>这里不用原版的MentoHUST，而是使用已经为OpenWrt打包好的<a href="https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk" target="_blank" rel="noopener">MentoHUST-OpenWrt-ipk</a></p>
+<p>首先cd到OpenWrt SDK的目录下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> openwrt-sdk-19.07.4-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64</span><br></pre></td></tr></table></figure>
+
+<p>然后通过git clone将MentoHUST源码同步到package目录下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk.git package/mentohust</span><br></pre></td></tr></table></figure>
+
+<h1 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h1><p>编译环境搭建完成之后就可以正式开始交叉编译了。</p>
+<h2 id="更新feeds"><a href="#更新feeds" class="headerlink" title="更新feeds"></a>更新feeds</h2><p>首先需要更新feeds：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./scripts/feeds update</span><br></pre></td></tr></table></figure>
+
+<p>然后安装libpcap feed：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./scripts/feeds install libpcap</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意，OpenWrt SDK编译libpcap时只会编译出libpcap.so而不会编译出libpcap.a，但是mentohust需要libpcap.a，所以需要修改一下libpcap的Makefile，编辑<code>package/feeds/base/libpcap/Makefile</code>文件，将其中的</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">define</span> Package/libpcap/install</span><br><span class="line">        <span class="variable">$(INSTALL_DIR)</span> $(1)/usr/lib</span><br><span class="line">        <span class="variable">$(CP)</span> <span class="variable">$(PKG_INSTALL_DIR)</span>/usr/lib/libpcap.so.* $(1)/usr/lib/</span><br><span class="line"><span class="keyword">endef</span></span><br></pre></td></tr></table></figure>
+
+<p>修改为：</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">define</span> Package/libpcap/install</span><br><span class="line">        <span class="variable">$(INSTALL_DIR)</span> $(1)/usr/lib</span><br><span class="line">        <span class="variable">$(CP)</span> <span class="variable">$(PKG_INSTALL_DIR)</span>/usr/lib/libpcap.&#123;a,so*&#125; $(1)/usr/lib/</span><br><span class="line"><span class="keyword">endef</span></span><br></pre></td></tr></table></figure>
+
+<p>即让编译libpcap的时候同时编译出libpcap.a</p>
+<h2 id="menuconfig"><a href="#menuconfig" class="headerlink" title="menuconfig"></a>menuconfig</h2><p>接下来如要对编译配置文件进行简单的配置，这里直接使用menuconfig：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
+
+<p>这里需要关闭<code>Advanced configuration options (for developers)</code>中的<code>Automatic removal of build directories</code>：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/disable_auto_remove.png" class="" title="disable_auto_remove">
+
+<p>并确保<code>Libraries</code>下的<code>libpcap</code>为<code>M</code>：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/libpcap.png" class="" title="libpcap">
+
+<p><code>Network</code>下的<code>Ruijie</code>下的<code>mentohust</code>为<code>M</code>：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/mentohust.png" class="" title="mentohust">
+
+<p>这样menuconfig就完成了，保存一下退出即可</p>
+<h2 id="make"><a href="#make" class="headerlink" title="make!"></a>make!</h2><p>好了，到这一步所有的准备工作就都完成了，接下来就可以开始编译了：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make package/mentohust/compile</span><br></pre></td></tr></table></figure>
+
+<p>这一步需要在线下载libpcap的源码，所以请确保有一个良好的网络连接</p>
+<p>如果没有什么意外情况的话，等编译完成之后就能在<code>bin/packages/mips_24kc/base</code>下找到libpcap和mentohust的ipk软件包了：</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/ipk.png" class="" title="ipk">
+
+<h1 id="安装到OpenWrt"><a href="#安装到OpenWrt" class="headerlink" title="安装到OpenWrt"></a>安装到OpenWrt</h1><p>接下来就只需要把编译出来的这两个ipk软件包安装进OpenWrt路由器就行了</p>
+<h2 id="上传ipk到OpenWrt"><a href="#上传ipk到OpenWrt" class="headerlink" title="上传ipk到OpenWrt"></a>上传ipk到OpenWrt</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp libpcap1_1.9.1-2.1_mips_24kc.ipk root@192.168.1.1:/root/</span><br><span class="line">scp mentohust_0.3.1-1_mips_24kc.ipk root@192.168.1.1:/root/</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>SSH连接到OpenWrt路由器，然后执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">opkg install libpcap1_1.9.1-2.1_mips_24kc.ipk</span><br><span class="line">opkg install mentohust_0.3.1-1_mips_24kc.ipk</span><br></pre></td></tr></table></figure>
+
+<h1 id="MentoHUST-LuCI-App"><a href="#MentoHUST-LuCI-App" class="headerlink" title="MentoHUST LuCI App"></a>MentoHUST LuCI App</h1><p>将上面编译出来地libpcap和mentohust安装到OpenWrt之后就能ssh连接到路由器，在命令行下面使用mentohust命令进行锐捷认证了，但是通过命令行进行锐捷认证总是不方便的。所以我们还需要一个管理页面，通过浏览器就能管理mentohust的配置和运行状态。</p>
+<p>而因为管理页面只是执行一些命令的调用，并不需要像MentoHUST那样针对不同的CPU平台编译可执行文件，所以直接到这个仓库<a href="https://github.com/BoringCat/luci-app-mentohust的[Release](https://github.com/BoringCat/luci-app-mentohust/releases)页面下载作者编译好的ipk包然后跟前文一样使用`opkg" target="_blank" rel="noopener">https://github.com/BoringCat/luci-app-mentohust的[Release](https://github.com/BoringCat/luci-app-mentohust/releases)页面下载作者编译好的ipk包然后跟前文一样使用`opkg</a> install`安装到路由器即可。</p>
+<img src="/2020/09/14/cross-compile-mentohust-for-openwrt/luci.png" class="" title="luci">
+
+<p>至此，就可以愉快地让路由器代替电脑完成锐捷认证了，愉快享受网上冲浪的乐趣吧！XD</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>OpenWrt</tag>
+        <tag>交叉编译</tag>
+        <tag>mentohust</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>写于本科毕业之际</title>
     <url>/2020/05/25/end-four-years-at-jmu/</url>
     <content><![CDATA[<p>5月23号毕业论文线上答辩结束，整理答辩记录的时候才意识到本科就这么毕业了，“6月份分批安排学生回宿舍取行李，当天取完，当天回去，不能逗留”，想象过千万种毕业时的场景，却未曾想过本科生活会以这样的方式画上句号。甚至学士服👨‍🎓都没来得及穿，毕业照也没拍，毕业典礼也改成了☁️毕业典礼。按照往年的传统，学校还会请毕业生们在食堂免费吃一顿丰盛的自助餐，但是今年这情况显然是不可能了，谁能想到春节回家前在食堂吃的最后一餐竟然成了本科在食堂吃的最后一餐。想念西苑食堂二楼阿姨热情的招呼以及万人食堂二楼偏厅的炸🍗。在学校的时候天天吐槽学校的饭菜多么多么难吃，现在几个月不吃学校食堂反倒觉得食堂的饭菜很香。<a id="more"></a></p>
