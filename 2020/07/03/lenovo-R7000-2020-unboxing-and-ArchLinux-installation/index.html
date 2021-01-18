@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"lgiki.net","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。 先说说我这台联想R7000的具体配置吧： 123456CPU: AMD Ryzen 7 4800H with Radeon Graphics (16) @ 2.900GHzMemory: 2 * 8G DDR4 3200MHzGPU: NVIDIA GeForce GTX 16">
+  <meta name="description" content="本文已于2021年1月18日更新，更新内容如下：  更新了触摸板部分 增加了因KMS导致Xorg无法正常启动的解决方案   今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。 先说说我这台联想R7000的具体配置吧： 123456CPU: AMD Ryzen 7 4800H with Radeon Graphics (16)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="联想R7000开箱上手以及ArchLinux安装">
 <meta property="og:url" content="http://lgiki.net/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/index.html">
 <meta property="og:site_name" content="LGiki&#39;s Blog">
-<meta property="og:description" content="今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。 先说说我这台联想R7000的具体配置吧： 123456CPU: AMD Ryzen 7 4800H with Radeon Graphics (16) @ 2.900GHzMemory: 2 * 8G DDR4 3200MHzGPU: NVIDIA GeForce GTX 16">
+<meta property="og:description" content="本文已于2021年1月18日更新，更新内容如下：  更新了触摸板部分 增加了因KMS导致Xorg无法正常启动的解决方案   今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。 先说说我这台联想R7000的具体配置吧： 123456CPU: AMD Ryzen 7 4800H with Radeon Graphics (16)">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://lgiki.net/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/neofetch.png">
 <meta property="og:image" content="http://lgiki.net/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/optimus-manager-qt.png">
 <meta property="og:image" content="http://lgiki.net/2020/07/03/lenovo-R7000-2020-unboxing-and-ArchLinux-installation/argos-optimus-manager.png">
 <meta property="article:published_time" content="2020-07-03T05:20:49.000Z">
-<meta property="article:modified_time" content="2020-11-27T05:06:11.464Z">
+<meta property="article:modified_time" content="2021-01-18T01:53:55.250Z">
 <meta property="article:author" content="LGiki">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="开箱">
@@ -239,7 +239,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-27 13:06:11" itemprop="dateModified" datetime="2020-11-27T13:06:11+08:00">2020-11-27</time>
+                <time title="修改时间：2021-01-18 09:53:55" itemprop="dateModified" datetime="2021-01-18T09:53:55+08:00">2021-01-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,14 +264,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
+              <span>11k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>19 分钟</span>
+              <span>20 分钟</span>
             </span>
 
         </div>
@@ -283,7 +283,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。</p>
+        <blockquote>
+<p>本文已于2021年1月18日更新，更新内容如下：</p>
+<ul>
+<li>更新了触摸板部分</li>
+<li>增加了因KMS导致Xorg无法正常启动的解决方案</li>
+</ul>
+</blockquote>
+<p>今天是7月3日，距离我拿到这台2020款的联想R7000正好过去了一个月，用了一个月时间也有资格来聊聊联想的这台机器了。</p>
 <p>先说说我这台联想R7000的具体配置吧：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CPU: AMD Ryzen 7 4800H with Radeon Graphics (16) @ 2.900GHz</span><br><span class="line">Memory: 2 * 8G DDR4 3200MHz</span><br><span class="line">GPU: NVIDIA GeForce GTX 1650</span><br><span class="line">SSD: Samsung PM981a 512G</span><br><span class="line">SSD: Intel 760P 512G</span><br><span class="line">Wireless LAN Card: Intel Wi-Fi 6 AX200</span><br></pre></td></tr></table></figure>
 
@@ -394,6 +401,18 @@
 
 <p>找到了一个相关的讨论：<a href="https://bugzilla.kernel.org/show_bug.cgi?id=207759" target="_blank" rel="noopener">https://bugzilla.kernel.org/show_bug.cgi?id=207759</a></p>
 <p>因为我日常几乎用不到笔记本的触摸板，平时都是用鼠标，所以也懒得再去研究这个问题了，说不定随着内核的更新，触摸板突然就能用了呢（想peach）。</p>
+<h3 id="更新-2021-1-18"><a href="#更新-2021-1-18" class="headerlink" title="更新 (2021.1.18)"></a>更新 (2021.1.18)</h3><p>针对触摸板无法正常使用的相关讨论可以看：<a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1887190" target="_blank" rel="noopener">https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1887190</a></p>
+<p>5.11及之后的内核应该就修复这个问题了，只需要等5.11内核release之后及时更新即可。</p>
+<h2 id="Xorg无法启动"><a href="#Xorg无法启动" class="headerlink" title="Xorg无法启动"></a>Xorg无法启动</h2><p>如果你遇到了Xorg无法启动的问题，查看日志找到了如下字样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;dev&#x2F;dri&#x2F;card0: No such file or directory</span><br></pre></td></tr></table></figure>
+
+<p>检查<a href="https://archlinux.org/packages/extra/x86_64/xf86-video-amdgpu/" target="_blank" rel="noopener">xf86-video-amdgpu</a>等相关包均安装正常的情况下，需要根据<a href="https://wiki.archlinux.org/index.php/Kernel_mode_setting" target="_blank" rel="noopener">https://wiki.archlinux.org/index.php/Kernel_mode_setting</a>中的描述，编辑<code>/etc/mkinitcpio.conf</code>文件，在其中的<code>MODULES</code>部分加入<code>amdgpu</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MODULES&#x3D;(amdgpu)</span><br></pre></td></tr></table></figure>
+
+<p>保存之后需要执行下面指令，重新生成initramfs images：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mkinitcpio -P</span><br></pre></td></tr></table></figure>
+
+<p>重启系统之后Xorg应该就能正常启动了</p>
 
     </div>
 
@@ -523,7 +542,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ArchLinux安装"><span class="nav-number">1.</span> <span class="nav-text">ArchLinux安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WiFi连接"><span class="nav-number">1.1.</span> <span class="nav-text">WiFi连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#屏蔽nouveau"><span class="nav-number">1.2.</span> <span class="nav-text">屏蔽nouveau</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#屏幕亮度调节"><span class="nav-number">1.3.</span> <span class="nav-text">屏幕亮度调节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AMD-NVIDIA双显卡切换"><span class="nav-number">1.4.</span> <span class="nav-text">AMD&#x2F;NVIDIA双显卡切换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装显卡驱动"><span class="nav-number">1.4.1.</span> <span class="nav-text">安装显卡驱动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Optimus-Manager"><span class="nav-number">1.4.2.</span> <span class="nav-text">安装Optimus Manager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Optimus-Manager"><span class="nav-number">1.4.3.</span> <span class="nav-text">配置Optimus Manager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimus-Manager用法"><span class="nav-number">1.4.4.</span> <span class="nav-text">Optimus Manager用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimus-Manager-GUI"><span class="nav-number">1.4.5.</span> <span class="nav-text">Optimus Manager GUI</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#触摸板"><span class="nav-number">1.5.</span> <span class="nav-text">触摸板</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ArchLinux安装"><span class="nav-number">1.</span> <span class="nav-text">ArchLinux安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WiFi连接"><span class="nav-number">1.1.</span> <span class="nav-text">WiFi连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#屏蔽nouveau"><span class="nav-number">1.2.</span> <span class="nav-text">屏蔽nouveau</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#屏幕亮度调节"><span class="nav-number">1.3.</span> <span class="nav-text">屏幕亮度调节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AMD-NVIDIA双显卡切换"><span class="nav-number">1.4.</span> <span class="nav-text">AMD&#x2F;NVIDIA双显卡切换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装显卡驱动"><span class="nav-number">1.4.1.</span> <span class="nav-text">安装显卡驱动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Optimus-Manager"><span class="nav-number">1.4.2.</span> <span class="nav-text">安装Optimus Manager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Optimus-Manager"><span class="nav-number">1.4.3.</span> <span class="nav-text">配置Optimus Manager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimus-Manager用法"><span class="nav-number">1.4.4.</span> <span class="nav-text">Optimus Manager用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimus-Manager-GUI"><span class="nav-number">1.4.5.</span> <span class="nav-text">Optimus Manager GUI</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#触摸板"><span class="nav-number">1.5.</span> <span class="nav-text">触摸板</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#更新-2021-1-18"><span class="nav-number">1.5.1.</span> <span class="nav-text">更新 (2021.1.18)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xorg无法启动"><span class="nav-number">1.6.</span> <span class="nav-text">Xorg无法启动</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -603,8 +622,8 @@
 
 <div class="copyright">
   
-  &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -614,13 +633,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">28k</span>
+    <span title="站点总字数">29k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">51 分钟</span>
+    <span title="站点阅读时长">52 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
